@@ -1,0 +1,19 @@
+{
+  "name": "nhs-deployments",
+  "version": "1.0.0",
+  "description": "nhs-deployments",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Afalls89/nhs-deployments.git"
+  },
+  "author": "Andrew Falls",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Afalls89/nhs-deployments/issues"
+  },
+  "homepage": "https://github.com/Afalls89/nhs-deployments#readme"
+}
