@@ -1,4 +1,4 @@
-const { findDTL } = require("../utils/utils");
+const { findDTL, dateConversion } = require("../utils/utils");
 
 const testData = {
 	projects: [
@@ -46,9 +46,17 @@ const testData = {
 };
 
 describe("findDTL", () => {
-	test("DeployToLive", () => {
+	test("returns the number of -Deploy to live- deployments", () => {
 		const deployments = testData.projects[0].releases[0].deployments;
 
 		expect(findDTL(deployments)).toBe(1);
+	});
+});
+
+describe("dateConversion", () => {
+	test.only("converts the date format", () => {
+		const date = testData.projects[0].releases[0].deployments[0].created;
+
+		expect(dateConversion(date)).toBe("tuesday");
 	});
 });
