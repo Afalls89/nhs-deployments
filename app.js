@@ -1,10 +1,19 @@
 const data = require("./input-file/projects.json");
+const { findDTL } = require("./utils");
 
-// console.log(data);
+console.log(data.projects[0].environments);
 
-// const deploymentData = JSON.parse(data);
+console.log(data.projects[0].releases[0].deployments[0].created);
 
-console.log(data.projects[2].environments);
+findDTL(deployments);
+
+// const projectsDepLive = projects.filter(project => {
+// 	const envirLive = project.environments.filter(environment => {
+// 		if (Object.value(environment) === "Live") {
+// 			return true;
+// 		}
+// 	});
+// });
 
 //Day of week deployment frequency
 
@@ -31,3 +40,5 @@ console.log(data.projects[2].environments);
 // separate projects by project groups
 
 // extract projects that do not have a Live
+
+module.exports = { findDTL };

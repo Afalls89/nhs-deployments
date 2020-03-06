@@ -4,7 +4,7 @@
   "description": "nhs-deployments",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Afalls89/nhs-deployments/issues"
   },
-  "homepage": "https://github.com/Afalls89/nhs-deployments#readme"
+  "homepage": "https://github.com/Afalls89/nhs-deployments#readme",
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "supertest": "^4.0.2"
+  }
 }
