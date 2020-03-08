@@ -11,6 +11,36 @@ exports.findDTL = (deployments, deployData) => {
 	return DeployToLive;
 };
 
+exports.timeToLive = deployments => {
+	const duration = deployments.reduce((durationData, deployment) => {
+		if (
+			deployment.name === "Deploy to Live" &&
+			deployment.state === "Success"
+		) {
+			const date = new Date(deployment.created);
+			const dateInMs = date.getTime();
+			durationData.liveTime = dateInMs;
+		}
+
+		if (
+			deployment.name === "Deploy to Integration" &&
+			deployment.state === "Success"
+		) {
+			const date = new Date(deployment.created);
+			const dateInMs = date.getTime();
+			durationData.integrationTime = dateInMs;
+		}
+		return durationData;
+	}, {});
+
+	// console.log(duration);
+	const durationToLive = duration.liveTime - duration.integrationTime;
+
+	// console.log(durationToLive);
+
+	return durationToLive;
+};
+
 exports.dateConversion = date => {
 	const dateDeployed = new Date(date);
 

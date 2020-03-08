@@ -1,5 +1,5 @@
 const data = require("./input-file/projects.json");
-const { findDTL, formatDeployData } = require("./utils/utils");
+const { findDTL, formatDeployData, timeToLive } = require("./utils/utils");
 const { Parser } = require("json2csv");
 const fs = require("file-system");
 
@@ -15,6 +15,8 @@ let deployData = {
 	Sunday: 0
 };
 
+let releaseTime = {};
+
 const allLiveDeploymentsForEachDay = (data, deployData) => {
 	data.projects.forEach(project => {
 		project.releases.forEach(release => {
@@ -25,24 +27,43 @@ const allLiveDeploymentsForEachDay = (data, deployData) => {
 
 allLiveDeploymentsForEachDay(data, deployData);
 
-console.log(deployData);
-
 const deploymentData = formatDeployData(deployData);
-
-console.log(deploymentData);
 
 const fields = ["DayOfWeek", "LiveDeployments"];
 
 const json2csvParser = new Parser({ fields });
 const csv = json2csvParser.parse(deploymentData);
 
-console.log(csv);
+// console.log(csv);
 
-fs.writeFile("./output-files/1_deployment_frequency.csv", csv);
-
-// written to file  "1_deployment_frequency.csv"
+// fs.writeFile("./output-files/1_deployment_frequency.csv", csv);
 
 //Projects with slow releases
+
+const averageReleaseTimesByProjectGroup = (data, releaseTime) => {
+	data.projects.forEach(project => {
+		const wentLive = project.environments.filter(environment => {
+			if (Object.values(environment).includes("Live")) {
+				return true;
+			}
+		});
+
+		if (wentLive.length > 0) {
+			const project_group = project.project_group;
+			releaseTime[project_group] = {};
+			project.releases.forEach(release => {
+				const durationToLive = timeToLive(release.deployments);
+
+				releaseTime[project.project_group].time += durationToLive;
+				releaseTime[project.project_group].releaseCount += 1;
+			});
+		}
+	});
+
+	// console.log(Object.entries(releaseTime));
+};
+
+averageReleaseTimesByProjectGroup(data, releaseTime);
 
 // separate projects by project groups
 
@@ -60,4 +81,8 @@ fs.writeFile("./output-files/1_deployment_frequency.csv", csv);
 
 // extract projects that do not have a Live
 
-module.exports = { findDTL, allLiveDeploymentsForEachDay };
+module.exports = {
+	findDTL,
+	allLiveDeploymentsForEachDay,
+	averageReleaseTimesByProjectGroup
+};
