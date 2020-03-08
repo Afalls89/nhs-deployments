@@ -1,33 +1,30 @@
-exports.findDTL = deployments => {
-	const DeployToLive = deployments.reduce((count, deployment) => {
-		if (deployment.name === "Deploy to Live") {
-			++count;
+exports.findDTL = (deployments, deployData) => {
+	const DeployToLive = deployments.reduce((deployData, deployment) => {
+		if (deployment.environment === "Live") {
+			const dayOfTheWeek = this.dateConversion(deployment.created);
+			++deployData[dayOfTheWeek];
 		}
-		return count;
-	}, 0);
+		return deployData;
+	}, deployData);
 
 	return DeployToLive;
 };
 
 exports.dateConversion = date => {
-	console.log(date);
-
 	const dateDeployed = new Date(date);
 	const day = dateDeployed.getDay();
 
 	daysOfTheWeek = {
-		1: "monday",
-		2: "tuesday",
-		3: "wednesday",
-		4: "thursday",
-		5: "friday",
-		6: "saturday",
-		7: "sunday"
+		1: "Monday",
+		2: "Tuesday",
+		3: "Wednesday",
+		4: "Thursday",
+		5: "Friday",
+		6: "Saturday",
+		7: "Sunday"
 	};
 
 	const deploymentDay = daysOfTheWeek[day];
-
-	console.log(deploymentDay);
 
 	return deploymentDay;
 };

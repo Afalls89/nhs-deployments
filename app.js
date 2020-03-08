@@ -1,19 +1,19 @@
 const data = require("./input-file/projects.json");
-const { findDTL } = require("./utils");
+const { findDTL } = require("./utils/utils");
 
-console.log(data.projects[0].environments);
+const deployments = data.projects[0].releases[2].deployments;
 
-console.log(data.projects[0].releases[0].deployments[0].created);
+let deployData = {
+	Monday: 0,
+	Tuesday: 0,
+	Wednesday: 0,
+	Thursday: 0,
+	Friday: 0,
+	Saturday: 0,
+	Sunday: 0
+};
 
-findDTL(deployments);
-
-// const projectsDepLive = projects.filter(project => {
-// 	const envirLive = project.environments.filter(environment => {
-// 		if (Object.value(environment) === "Live") {
-// 			return true;
-// 		}
-// 	});
-// });
+console.log(findDTL(deployments, deployData));
 
 //Day of week deployment frequency
 
