@@ -1,5 +1,7 @@
 const data = require("./input-file/projects.json");
-const { findDTL } = require("./utils/utils");
+const { findDTL, formatDeployData } = require("./utils/utils");
+const { Parser } = require("json2csv");
+const fs = require("file-system");
 
 const deployments = data.projects[0].releases[2].deployments;
 
@@ -24,14 +26,19 @@ const allLiveDeploymentsForEachDay = (data, deployData) => {
 allLiveDeploymentsForEachDay(data, deployData);
 
 console.log(deployData);
-// const liveDeploymentsPerRelease = findDTL(deployments, deployData);
-// console.log(liveDeploymentsPerRelease);
 
-//Day of week deployment frequency
+const deploymentData = formatDeployData(deployData);
 
-// number of deployments to live (successful or unsuccessful)
+console.log(deploymentData);
 
-//sort by day
+const fields = ["DayOfWeek", "LiveDeployments"];
+
+const json2csvParser = new Parser({ fields });
+const csv = json2csvParser.parse(deploymentData);
+
+console.log(csv);
+
+fs.writeFile("./output-files/1_deployment_frequency.csv", csv);
 
 // written to file  "1_deployment_frequency.csv"
 

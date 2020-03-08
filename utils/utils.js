@@ -30,3 +30,19 @@ exports.dateConversion = date => {
 
 	return deploymentDay;
 };
+
+exports.formatDeployData = deployData => {
+	const daysAndDeployments = Object.entries(deployData);
+	formatedDeployData = daysAndDeployments.reduce(
+		(formatedData, dayAndCount) => {
+			formatedData.push({
+				DayOfWeek: dayAndCount[0],
+				LiveDeployments: dayAndCount[1]
+			});
+			return formatedData;
+		},
+		[]
+	);
+
+	return formatedDeployData;
+};
