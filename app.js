@@ -13,7 +13,19 @@ let deployData = {
 	Sunday: 0
 };
 
-console.log(findDTL(deployments, deployData));
+const allLiveDeploymentsForEachDay = (data, deployData) => {
+	data.projects.forEach(project => {
+		project.releases.forEach(release => {
+			findDTL(release.deployments, deployData);
+		});
+	});
+};
+
+allLiveDeploymentsForEachDay(data, deployData);
+
+console.log(deployData);
+// const liveDeploymentsPerRelease = findDTL(deployments, deployData);
+// console.log(liveDeploymentsPerRelease);
 
 //Day of week deployment frequency
 
@@ -41,4 +53,4 @@ console.log(findDTL(deployments, deployData));
 
 // extract projects that do not have a Live
 
-module.exports = { findDTL };
+module.exports = { findDTL, allLiveDeploymentsForEachDay };
