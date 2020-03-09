@@ -1,3 +1,24 @@
+const { Parser } = require("json2csv");
+const fs = require("file-system");
+
+exports.allLiveDeploymentsForEachDay = data => {
+	let deployData = {
+		Monday: 0,
+		Tuesday: 0,
+		Wednesday: 0,
+		Thursday: 0,
+		Friday: 0,
+		Saturday: 0,
+		Sunday: 0
+	};
+	data.projects.forEach(project => {
+		project.releases.forEach(release => {
+			this.findDTL(release.deployments, deployData);
+		});
+	});
+	return deployData;
+};
+
 exports.findDTL = (deployments, deployData) => {
 	const DeployToLive = deployments.reduce((deployData, deployment) => {
 		if (deployment.environment === "Live") {
@@ -7,8 +28,6 @@ exports.findDTL = (deployments, deployData) => {
 		}
 		return deployData;
 	}, deployData);
-
-	return DeployToLive;
 };
 
 exports.timeToLive = deployments => {
@@ -79,7 +98,8 @@ exports.formatDeployData = deployData => {
 	return formatedDeployData;
 };
 
-exports.averageReleaseTimesByProjectGroup = (data, releaseTime) => {
+exports.averageReleaseTimesByProjectGroup = data => {
+	let releaseTime = {};
 	data.projects.forEach(project => {
 		const project_group = project.project_group;
 
@@ -110,47 +130,39 @@ exports.averageReleaseTimesByProjectGroup = (data, releaseTime) => {
 			});
 		}
 
-		// console.log(releaseTime, "<<<<<<<<<<<<<<<<<<<releaseTime");
-
 		if (releaseTime[project_group]) {
-			// console.log(
-			// 	releaseTime[project_group].releaseCount,
-			// 	"<<<<<<<<<<<<<<<<<releaseCount"
-			// );
-			// console.log(
-			// 	releaseTime[project_group].time,
-			// 	">>>>>>>>>>>>>>>>>>>>>> time"
-			// );
 			if (!releaseTime[project_group].averageTimeToLive) {
 				releaseTime[project_group].averageTimeToLive = 0;
 			}
-			releaseTime[project_group].averageTimeToLive +=
+			releaseTime[project_group].averageTimeToLive += Math.round(
 				releaseTime[project_group].time /
-				releaseTime[project_group].releaseCount;
-
-			// console.log(
-			// 	project_group,
-			// 	releaseTime[project_group].releaseCount,
-			// 	releaseTime[project_group].averageTimeToLive,
-			// 	"<<<<<<<<<<averageTimeToLive"
-			// );
+					releaseTime[project_group].releaseCount
+			);
 		}
 	});
-
-	// console.log(Object.entries(releaseTime));
+	return releaseTime;
 };
 
 exports.formatReleaseData = releaseTime => {
-	// console.log(releaseTime);
 	const groupsAndTimes = Object.entries(releaseTime);
-	// console.log(groupsAndTimes);
+	groupsAndTimes.sort(function(a, b) {
+		return a[1].averageTimeToLive - b[1].averageTimeToLive;
+	});
+	groupsAndTimes.reverse();
+
 	const formattedReleaseData = groupsAndTimes.reduce((formattedData, group) => {
-		const key = group[0];
-		const value = group[1].averageTimeToLive;
-		formattedData.push({ [key]: value });
+		const project = group[0];
+		const time = group[1].averageTimeToLive;
+		formattedData.push({ ProjectGroup: project, AverageTimeToLive: time });
 
 		return formattedData;
 	}, []);
+	return formattedReleaseData;
+};
 
-	console.log(formattedReleaseData);
+exports.createCSV = (content, fields, path) => {
+	const json2csvParser = new Parser({ fields });
+	const csv = json2csvParser.parse(content);
+
+	fs.writeFile(path, csv);
 };
