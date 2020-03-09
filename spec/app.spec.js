@@ -1,4 +1,8 @@
-const { findDTL, dateConversion } = require("../utils/utils");
+const {
+	findDTL,
+	dateConversion,
+	averageReleaseTimesByProjectGroup
+} = require("../utils/utils");
 
 const { allLiveDeploymentsForEachDay } = require("../app.js");
 
@@ -106,6 +110,29 @@ const testData = {
 					]
 				},
 				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
 					version: "1.1.1.002",
 					deployments: [
 						{
@@ -116,6 +143,155 @@ const testData = {
 						},
 						{
 							environment: "Test",
+							created: "2019-10-01T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-02T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				}
+			]
+		},
+		{
+			project_id: "9f564a48-e50c-11e9-bc4f-acb57d6c5605",
+			project_group: "Spaniel",
+			environments: [
+				{
+					environment: "Integration"
+				},
+				{
+					environment: "Test"
+				},
+				{
+					environment: "Live"
+				}
+			],
+			releases: [
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.002",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-01T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-02T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				}
+			]
+		},
+		{
+			project_id: "9f564a48-e40c-11e9-bc4f-acb57d6c5605",
+			project_group: "Spaniel",
+			environments: [
+				{
+					environment: "Integration"
+				},
+				{
+					environment: "Test"
+				},
+				{
+					environment: "Live"
+				}
+			],
+			releases: [
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.002",
+					deployments: [
+						{
+							environment: "Live",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						},
+						{
+							environment: "Live",
 							created: "2019-10-01T08:23:58.000Z",
 							state: "Success",
 							name: "Deploy to Live"
@@ -192,5 +368,19 @@ describe("dateConversion", () => {
 
 		expect(dateConversion(date1)).toBe("Wednesday");
 		expect(dateConversion(date2)).toBe("Thursday");
+	});
+});
+
+describe("averageReleaseTimesByProjectGroup", () => {
+	test.only("to return the release count of a given project", () => {
+		let releaseTime = {};
+
+		averageReleaseTimesByProjectGroup(testData, releaseTime);
+
+		console.log(releaseTime, ">>>>>>>>>>>>>>>releaseTime");
+
+		expect(releaseTime["retriever"].releaseCount).toBe(2);
+		expect(releaseTime["Spaniel"].releaseCount).toBe(4);
+		expect(releaseTime["Spaniel"].averageTimeToLive).toBe(25608);
 	});
 });

@@ -1,9 +1,13 @@
 const data = require("./input-file/projects.json");
-const { findDTL, formatDeployData, timeToLive } = require("./utils/utils");
+const {
+	findDTL,
+	formatDeployData,
+	timeToLive,
+	averageReleaseTimesByProjectGroup,
+	formatReleaseData
+} = require("./utils/utils");
 const { Parser } = require("json2csv");
 const fs = require("file-system");
-
-const deployments = data.projects[0].releases[2].deployments;
 
 let deployData = {
 	Monday: 0,
@@ -32,38 +36,24 @@ const deploymentData = formatDeployData(deployData);
 const fields = ["DayOfWeek", "LiveDeployments"];
 
 const json2csvParser = new Parser({ fields });
-const csv = json2csvParser.parse(deploymentData);
+const csv1 = json2csvParser.parse(deploymentData);
 
 // console.log(csv);
 
-// fs.writeFile("./output-files/1_deployment_frequency.csv", csv);
+// fs.writeFile("./output-files/1_deployment_frequency.csv", csv1);
 
 //Projects with slow releases
 
-const averageReleaseTimesByProjectGroup = (data, releaseTime) => {
-	data.projects.forEach(project => {
-		const wentLive = project.environments.filter(environment => {
-			if (Object.values(environment).includes("Live")) {
-				return true;
-			}
-		});
-
-		if (wentLive.length > 0) {
-			const project_group = project.project_group;
-			releaseTime[project_group] = {};
-			project.releases.forEach(release => {
-				const durationToLive = timeToLive(release.deployments);
-
-				releaseTime[project.project_group].time += durationToLive;
-				releaseTime[project.project_group].releaseCount += 1;
-			});
-		}
-	});
-
-	// console.log(Object.entries(releaseTime));
-};
-
 averageReleaseTimesByProjectGroup(data, releaseTime);
+
+const releasesData = formatReleaseData(releaseTime);
+
+// const fields = ["ProjectGroup", "AverageToLive"];
+
+// const json2csvParser = new Parser({ fields });
+// const csv2 = json2csvParser.parse(deploymentData);
+
+// fs.writeFile("./output-files/2_slow_releases.csv", csv2);
 
 // separate projects by project groups
 
