@@ -4,7 +4,8 @@
   "description": "nhs-deployments",
   "main": "index.js",
   "scripts": {
-    "test": "jest spec/app.spec.js"
+    "test": "jest spec/app.spec.js",
+    "app": "node app.js"
   },
   "repository": {
     "type": "git",
