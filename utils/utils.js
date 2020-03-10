@@ -168,10 +168,8 @@ exports.createCSV = (content, fields, path) => {
 };
 
 exports.findFailedDeployments = deployments => {
-	const failedDeploymentsCount = deployments.reduce(
+	const haveDeploymentsFailed = deployments.reduce(
 		(deploymentData, deployment) => {
-			console.log(deployment.name);
-			console.group(deployment.state);
 			if (
 				deployment.name === "Deploy to Live" &&
 				deployment.state === "Success"
@@ -190,17 +188,18 @@ exports.findFailedDeployments = deployments => {
 		{ integration: false, Live: false }
 	);
 
-	console.log(failedDeploymentsCount);
-
 	if (
-		failedDeploymentsCount.integration === true &&
-		failedDeploymentsCount.Live === false
+		haveDeploymentsFailed.integration === true &&
+		haveDeploymentsFailed.Live === false
 	) {
-		console.log("<><>< failed deployment");
 		return "deployment to Live Failed";
-	} else {
-		console.log("<><>< deployed");
+	} else if (
+		haveDeploymentsFailed.integration === true &&
+		haveDeploymentsFailed.Live === true
+	) {
 		return "deployment went Live";
+	} else {
+		return "integration failed";
 	}
 };
 
@@ -210,9 +209,35 @@ exports.failedReleasesByProjectGroup = data => {
 		const project_group = project.project_group;
 		project.releases.forEach(release => {
 			const failedDeployments = this.findFailedDeployments(release.deployments);
-			console.log(failedDeployments);
+
+			if (failedDeployments === "deployment to Live Failed") {
+				if (!failedReleases[project_group]) {
+					failedReleases[project_group] = 0;
+				}
+				++failedReleases[project_group];
+			}
 		});
 	});
 
 	return failedReleases;
+};
+
+exports.formatFailedReleases = failedReleases => {
+	const groupsAndFailCount = Object.entries(failedReleases);
+	groupsAndFailCount.sort(function(a, b) {
+		return a[1] - b[1];
+	});
+	groupsAndFailCount.reverse();
+
+	const formattedFailedDeploymentsData = groupsAndFailCount.reduce(
+		(formattedData, group) => {
+			const project = group[0];
+			const count = group[1];
+			formattedData.push({ ProjectGroup: project, FailedReleases: count });
+
+			return formattedData;
+		},
+		[]
+	);
+	return formattedFailedDeploymentsData;
 };

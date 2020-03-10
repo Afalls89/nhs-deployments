@@ -161,7 +161,7 @@ const testData = {
 		},
 		{
 			project_id: "9f564a48-e50c-11e9-bc4f-acb57d6c5605",
-			project_group: "Spaniel",
+			project_group: "Spaniel2",
 			environments: [
 				{
 					environment: "Integration"
@@ -247,7 +247,7 @@ const testData = {
 		},
 		{
 			project_id: "9f564a48-e40c-11e9-bc4f-acb57d6c5605",
-			project_group: "Spaniel",
+			project_group: "Spaniel3",
 			environments: [
 				{
 					environment: "Integration"
@@ -428,23 +428,23 @@ describe("averageReleaseTimesByProjectGroup", () => {
 });
 
 describe("findFailedDeployments", () => {
-	test.only("returns true if deployment fails to go live", () => {
+	test("returns true if deployment fails to go live", () => {
 		const deployments = testData.projects[3].releases[0].deployments;
 		const deployments2 = testData.projects[3].releases[2].deployments;
 		const deployments3 = testData.projects[3].releases[3].deployments;
 
-		// expect(findFailedDeployments(deployments)).toBe("deployment went Live");
+		expect(findFailedDeployments(deployments)).toBe("deployment went Live");
 		expect(findFailedDeployments(deployments2)).toBe(
 			"deployment to Live Failed"
 		);
-		// expect(findFailedDeployments(deployments3)).toBe(
-		// 	"deployment to Live Failed"
-		// );
+		expect(findFailedDeployments(deployments3)).toBe(
+			"deployment to Live Failed"
+		);
 	});
 });
 
 describe("failedReleasesByProjectGroup", () => {
-	test("to return failed deployment count", () => {
-		expect(failedReleasesByProjectGroup(testData)).toBe(12344);
+	test.only("to return failed deployment count", () => {
+		expect(failedReleasesByProjectGroup(testData)).toEqual({ Spaniel3: 2 });
 	});
 });

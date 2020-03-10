@@ -4,7 +4,9 @@ const {
 	averageReleaseTimesByProjectGroup,
 	allLiveDeploymentsForEachDay,
 	formatReleaseData,
-	createCSV
+	createCSV,
+	failedReleasesByProjectGroup,
+	formatFailedReleases
 } = require("./utils/utils");
 
 const deployData = allLiveDeploymentsForEachDay(data);
@@ -15,7 +17,7 @@ const fieldsDeployData = ["DayOfWeek", "LiveDeployments"];
 
 const pathDeployData = "./output-files/1_deployment_frequency.csv";
 
-createCSV(deploymentData, fieldsDeployData, pathDeployData);
+// createCSV(deploymentData, fieldsDeployData, pathDeployData);
 
 //
 
@@ -27,4 +29,22 @@ const fieldsReleaseData = ["ProjectGroup", "AverageTimeToLive"];
 
 const pathReleaseData = "./output-files/2_slow_releases.csv";
 
-createCSV(releaseData, fieldsReleaseData, pathReleaseData);
+// createCSV(releaseData, fieldsReleaseData, pathReleaseData);
+
+//
+
+const failedReleases = failedReleasesByProjectGroup(data);
+
+const failedDeploymentData = formatFailedReleases(failedReleases);
+
+console.log(failedDeploymentData);
+
+const fieldsFailedDeploymentData = ["ProjectGroup", "FailedReleases"];
+
+const pathFailedDeploymentData = "./output-files/3_failing_releases.csv";
+
+createCSV(
+	failedDeploymentData,
+	fieldsFailedDeploymentData,
+	pathFailedDeploymentData
+);
