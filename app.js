@@ -37,8 +37,6 @@ const failedReleases = failedReleasesByProjectGroup(data);
 
 const failedDeploymentData = formatFailedReleases(failedReleases);
 
-console.log(failedDeploymentData);
-
 const fieldsFailedDeploymentData = ["ProjectGroup", "FailedReleases"];
 
 const pathFailedDeploymentData = "./output-files/3_failing_releases.csv";

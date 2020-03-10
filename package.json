@@ -4,8 +4,7 @@
   "description": "nhs-deployments",
   "main": "index.js",
   "scripts": {
-    "test": "jest spec/app.spec.js",
-    "test-utils": "jest spec/utils.spec.js"
+    "test": "jest spec/app.spec.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +17,7 @@
   },
   "homepage": "https://github.com/Afalls89/nhs-deployments#readme",
   "devDependencies": {
-    "jest": "^25.1.0",
-    "supertest": "^4.0.2"
+    "jest": "^25.1.0"
   },
   "dependencies": {
     "file-system": "^2.2.2",

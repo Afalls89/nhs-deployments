@@ -1,12 +1,12 @@
 const {
 	findDTL,
+	timeToLive,
 	dateConversion,
 	averageReleaseTimesByProjectGroup,
 	findFailedDeployments,
-	failedReleasesByProjectGroup
+	failedReleasesByProjectGroup,
+	allLiveDeploymentsForEachDay
 } = require("../utils/utils");
-
-const { allLiveDeploymentsForEachDay } = require("../app.js");
 
 const testData = {
 	projects: [
@@ -347,6 +347,155 @@ const testData = {
 					]
 				}
 			]
+		},
+		{
+			project_id: "9f564a48-e40c-11e9-bc4f-acb57d6c5605",
+			project_group: "Spaniel",
+			environments: [
+				{
+					environment: "Integration"
+				},
+				{
+					environment: "Test"
+				},
+				{
+					environment: "Live"
+				}
+			],
+			releases: [
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.002",
+					deployments: [
+						{
+							environment: "Live",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-02T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				}
+			]
+		},
+		{
+			project_id: "9f564a48-e50c-11e9-bc4f-acb57d6c5605",
+			project_group: "retriever",
+			environments: [
+				{
+					environment: "Integration"
+				},
+				{
+					environment: "Test"
+				},
+				{
+					environment: "Live"
+				}
+			],
+			releases: [
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.002",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Failed",
+							name: "Deploy to integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-01T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-02T09:02:17.000Z",
+							state: "Success",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.002",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-01T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-02T09:02:17.000Z",
+							state: "Failed",
+							name: "Deploy to Live"
+						}
+					]
+				}
+			]
 		}
 	]
 };
@@ -365,7 +514,9 @@ describe("findDTL", () => {
 			Sunday: 0
 		};
 
-		expect(findDTL(deployments, deployData)).toEqual({
+		findDTL(deployments, deployData);
+
+		expect(deployData).toEqual({
 			Monday: 0,
 			Tuesday: 0,
 			Wednesday: 2,
@@ -377,25 +528,25 @@ describe("findDTL", () => {
 	});
 });
 
+describe("timeToLive", () => {
+	test("returns the time between a deployments integration and go Live", () => {
+		const testDeployments = testData.projects[4].releases[0].deployments;
+		const testDeployments2 = testData.projects[5].releases[1].deployments;
+		const testDeployments3 = testData.projects[5].releases[2].deployments;
+
+		expect(timeToLive(testDeployments)).toBe(142.26666666666668);
+		expect(timeToLive(testDeployments2)).toBe("Deployment did not go live");
+		expect(timeToLive(testDeployments3)).toBe("Deployment did not go live");
+	});
+});
+
 describe("allLiveDeploymentsForEachDay", () => {
 	test("returns the number of -Deploy to live- deployments in all projects", () => {
-		let deployData = {
+		expect(allLiveDeploymentsForEachDay(testData)).toEqual({
 			Monday: 0,
 			Tuesday: 0,
-			Wednesday: 0,
-			Thursday: 0,
-			Friday: 0,
-			Saturday: 0,
-			Sunday: 0
-		};
-
-		allLiveDeploymentsForEachDay(testData, deployData);
-
-		expect(deployData).toEqual({
-			Monday: 0,
-			Tuesday: 0,
-			Wednesday: 4,
-			Thursday: 2,
+			Wednesday: 15,
+			Thursday: 7,
 			Friday: 0,
 			Saturday: 0,
 			Sunday: 0
@@ -417,13 +568,13 @@ describe("averageReleaseTimesByProjectGroup", () => {
 	test("to return the release count of a given project", () => {
 		expect(
 			averageReleaseTimesByProjectGroup(testData)["retriever"].releaseCount
-		).toBe(2);
+		).toBe(3);
 		expect(
 			averageReleaseTimesByProjectGroup(testData)["Spaniel"].releaseCount
-		).toBe(4);
+		).toBe(2);
 		expect(
 			averageReleaseTimesByProjectGroup(testData)["Spaniel"].averageTimeToLive
-		).toBe(25608);
+		).toBe(284);
 	});
 });
 
@@ -444,7 +595,7 @@ describe("findFailedDeployments", () => {
 });
 
 describe("failedReleasesByProjectGroup", () => {
-	test.only("to return failed deployment count", () => {
+	test("to return failed deployment count", () => {
 		expect(failedReleasesByProjectGroup(testData)).toEqual({ Spaniel3: 2 });
 	});
 });
