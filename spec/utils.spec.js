@@ -155,7 +155,7 @@ const testData = {
 };
 
 describe("timeToLive", () => {
-	test.only("returns the time between a deployments integration and go Live", () => {
+	test("returns the time between a deployments integration and go Live", () => {
 		const testDeployments = testData.projects[0].releases[0].deployments;
 		const testDeployments2 = testData.projects[1].releases[1].deployments;
 		const testDeployments3 = testData.projects[1].releases[2].deployments;

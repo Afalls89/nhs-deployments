@@ -166,3 +166,53 @@ exports.createCSV = (content, fields, path) => {
 
 	fs.writeFile(path, csv);
 };
+
+exports.findFailedDeployments = deployments => {
+	const failedDeploymentsCount = deployments.reduce(
+		(deploymentData, deployment) => {
+			console.log(deployment.name);
+			console.group(deployment.state);
+			if (
+				deployment.name === "Deploy to Live" &&
+				deployment.state === "Success"
+			) {
+				deploymentData.Live = true;
+			}
+
+			if (
+				deployment.name === "Deploy to Integration" &&
+				deployment.state === "Success"
+			) {
+				deploymentData.integration = true;
+			}
+			return deploymentData;
+		},
+		{ integration: false, Live: false }
+	);
+
+	console.log(failedDeploymentsCount);
+
+	if (
+		failedDeploymentsCount.integration === true &&
+		failedDeploymentsCount.Live === false
+	) {
+		console.log("<><>< failed deployment");
+		return "deployment to Live Failed";
+	} else {
+		console.log("<><>< deployed");
+		return "deployment went Live";
+	}
+};
+
+exports.failedReleasesByProjectGroup = data => {
+	let failedReleases = {};
+	data.projects.forEach(project => {
+		const project_group = project.project_group;
+		project.releases.forEach(release => {
+			const failedDeployments = this.findFailedDeployments(release.deployments);
+			console.log(failedDeployments);
+		});
+	});
+
+	return failedReleases;
+};

@@ -1,7 +1,9 @@
 const {
 	findDTL,
 	dateConversion,
-	averageReleaseTimesByProjectGroup
+	averageReleaseTimesByProjectGroup,
+	findFailedDeployments,
+	failedReleasesByProjectGroup
 } = require("../utils/utils");
 
 const { allLiveDeploymentsForEachDay } = require("../app.js");
@@ -303,6 +305,46 @@ const testData = {
 							name: "Deploy to Live"
 						}
 					]
+				},
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						},
+						{
+							environment: "Live",
+							created: "2019-10-01T09:02:17.000Z",
+							state: "Failed",
+							name: "Deploy to Live"
+						}
+					]
+				},
+				{
+					version: "1.1.1.001",
+					deployments: [
+						{
+							environment: "Integration",
+							created: "2019-10-01T06:40:01.000Z",
+							state: "Success",
+							name: "Deploy to Integration"
+						},
+						{
+							environment: "Test",
+							created: "2019-10-02T08:23:58.000Z",
+							state: "Success",
+							name: "Deploy to Test"
+						}
+					]
 				}
 			]
 		}
@@ -372,15 +414,37 @@ describe("dateConversion", () => {
 });
 
 describe("averageReleaseTimesByProjectGroup", () => {
-	test.only("to return the release count of a given project", () => {
-		let releaseTime = {};
+	test("to return the release count of a given project", () => {
+		expect(
+			averageReleaseTimesByProjectGroup(testData)["retriever"].releaseCount
+		).toBe(2);
+		expect(
+			averageReleaseTimesByProjectGroup(testData)["Spaniel"].releaseCount
+		).toBe(4);
+		expect(
+			averageReleaseTimesByProjectGroup(testData)["Spaniel"].averageTimeToLive
+		).toBe(25608);
+	});
+});
 
-		averageReleaseTimesByProjectGroup(testData, releaseTime);
+describe("findFailedDeployments", () => {
+	test.only("returns true if deployment fails to go live", () => {
+		const deployments = testData.projects[3].releases[0].deployments;
+		const deployments2 = testData.projects[3].releases[2].deployments;
+		const deployments3 = testData.projects[3].releases[3].deployments;
 
-		console.log(releaseTime, ">>>>>>>>>>>>>>>releaseTime");
+		// expect(findFailedDeployments(deployments)).toBe("deployment went Live");
+		expect(findFailedDeployments(deployments2)).toBe(
+			"deployment to Live Failed"
+		);
+		// expect(findFailedDeployments(deployments3)).toBe(
+		// 	"deployment to Live Failed"
+		// );
+	});
+});
 
-		expect(releaseTime["retriever"].releaseCount).toBe(2);
-		expect(releaseTime["Spaniel"].releaseCount).toBe(4);
-		expect(releaseTime["Spaniel"].averageTimeToLive).toBe(25608);
+describe("failedReleasesByProjectGroup", () => {
+	test("to return failed deployment count", () => {
+		expect(failedReleasesByProjectGroup(testData)).toBe(12344);
 	});
 });
