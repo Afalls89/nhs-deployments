@@ -1,8 +1,8 @@
 const { Parser } = require("json2csv");
 const fs = require("file-system");
 
-exports.allLiveDeploymentsForEachDay = data => {
-	let deployData = {
+exports.getLiveDeploymentsForEachDay = data => {
+	let deploymentData = {
 		Monday: 0,
 		Tuesday: 0,
 		Wednesday: 0,
@@ -13,21 +13,21 @@ exports.allLiveDeploymentsForEachDay = data => {
 	};
 	data.projects.forEach(project => {
 		project.releases.forEach(release => {
-			this.findDTL(release.deployments, deployData);
+			this.findDeploymentsToLive(release.deployments, deploymentData);
 		});
 	});
-	return deployData;
+	return deploymentData;
 };
 
-exports.findDTL = (deployments, deployData) => {
-	const DeployToLive = deployments.reduce((deployData, deployment) => {
+exports.findDeploymentsToLive = (deployments, deploymentData) => {
+	const DeployToLive = deployments.reduce((deploymentData, deployment) => {
 		if (deployment.environment === "Live") {
 			const dayOfTheWeek = this.dateConversion(deployment.created);
 
-			++deployData[dayOfTheWeek];
+			++deploymentData[dayOfTheWeek];
 		}
-		return deployData;
-	}, deployData);
+		return deploymentData;
+	}, deploymentData);
 };
 
 exports.timeToLive = deployments => {
@@ -82,7 +82,7 @@ exports.dateConversion = date => {
 	return deploymentDay;
 };
 
-exports.formatDeployData = deployData => {
+exports.formatDeploymentData = deployData => {
 	const daysAndDeployments = Object.entries(deployData);
 	formatedDeployData = daysAndDeployments.reduce(
 		(formatedData, dayAndCount) => {
@@ -98,7 +98,7 @@ exports.formatDeployData = deployData => {
 	return formatedDeployData;
 };
 
-exports.averageReleaseTimesByProjectGroup = data => {
+exports.getAverageReleaseTimesByProjectGroup = data => {
 	let releaseTime = {};
 	data.projects.forEach(project => {
 		const project_group = project.project_group;
@@ -143,7 +143,7 @@ exports.averageReleaseTimesByProjectGroup = data => {
 	return releaseTime;
 };
 
-exports.formatReleaseData = releaseTime => {
+exports.formatReleaseTimeData = releaseTime => {
 	const groupsAndTimes = Object.entries(releaseTime);
 	groupsAndTimes.sort(function(a, b) {
 		return a[1].averageTimeToLive - b[1].averageTimeToLive;
@@ -167,7 +167,7 @@ exports.createCSV = (content, fields, path) => {
 	fs.writeFile(path, csv);
 };
 
-exports.findFailedDeployments = deployments => {
+exports.findFailedReleases = deployments => {
 	const haveDeploymentsFailed = deployments.reduce(
 		(deploymentData, deployment) => {
 			if (
@@ -203,12 +203,12 @@ exports.findFailedDeployments = deployments => {
 	}
 };
 
-exports.failedReleasesByProjectGroup = data => {
+exports.getFailedReleasesByProjectGroup = data => {
 	let failedReleases = {};
 	data.projects.forEach(project => {
 		const project_group = project.project_group;
 		project.releases.forEach(release => {
-			const failedDeployments = this.findFailedDeployments(release.deployments);
+			const failedDeployments = this.findFailedReleases(release.deployments);
 
 			if (failedDeployments === "deployment to Live Failed") {
 				if (!failedReleases[project_group]) {
@@ -222,7 +222,7 @@ exports.failedReleasesByProjectGroup = data => {
 	return failedReleases;
 };
 
-exports.formatFailedReleases = failedReleases => {
+exports.formatFailedReleasesData = failedReleases => {
 	const groupsAndFailCount = Object.entries(failedReleases);
 	groupsAndFailCount.sort(function(a, b) {
 		return a[1] - b[1];

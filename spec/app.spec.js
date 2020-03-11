@@ -1,11 +1,11 @@
 const {
-	findDTL,
+	findDeploymentsToLive,
 	timeToLive,
 	dateConversion,
-	averageReleaseTimesByProjectGroup,
-	findFailedDeployments,
-	failedReleasesByProjectGroup,
-	allLiveDeploymentsForEachDay
+	getAverageReleaseTimesByProjectGroup,
+	findFailedReleases,
+	getFailedReleasesByProjectGroup,
+	getLiveDeploymentsForEachDay
 } = require("../utils/utils");
 
 const testData = {
@@ -500,11 +500,11 @@ const testData = {
 	]
 };
 
-describe("findDTL", () => {
-	test("returns the number of live environments in deployments array ", () => {
+describe("findDeploymentsToLive", () => {
+	test("finds Deployments to live environment and updates deploymentData object ", () => {
 		const deployments = testData.projects[0].releases[1].deployments;
 
-		let deployData = {
+		let deploymentData = {
 			Monday: 0,
 			Tuesday: 0,
 			Wednesday: 0,
@@ -514,9 +514,9 @@ describe("findDTL", () => {
 			Sunday: 0
 		};
 
-		findDTL(deployments, deployData);
+		findDeploymentsToLive(deployments, deploymentData);
 
-		expect(deployData).toEqual({
+		expect(deploymentData).toEqual({
 			Monday: 0,
 			Tuesday: 0,
 			Wednesday: 2,
@@ -529,7 +529,7 @@ describe("findDTL", () => {
 });
 
 describe("timeToLive", () => {
-	test("returns the time between a deployments integration and go Live", () => {
+	test("returns the time between a deployments integration and go Live times", () => {
 		const testDeployments = testData.projects[4].releases[0].deployments;
 		const testDeployments2 = testData.projects[5].releases[1].deployments;
 		const testDeployments3 = testData.projects[5].releases[2].deployments;
@@ -540,9 +540,9 @@ describe("timeToLive", () => {
 	});
 });
 
-describe("allLiveDeploymentsForEachDay", () => {
-	test("returns the number of -Deploy to live- deployments in all projects", () => {
-		expect(allLiveDeploymentsForEachDay(testData)).toEqual({
+describe("getLiveDeploymentsForEachDay", () => {
+	test("returns an object with the number of -Deploy to live- deployments in all projects per day", () => {
+		expect(getLiveDeploymentsForEachDay(testData)).toEqual({
 			Monday: 0,
 			Tuesday: 0,
 			Wednesday: 15,
@@ -555,7 +555,7 @@ describe("allLiveDeploymentsForEachDay", () => {
 });
 
 describe("dateConversion", () => {
-	test("converts the date format", () => {
+	test("converts the date format and returns the day of the week", () => {
 		const date1 = testData.projects[0].releases[0].deployments[0].created;
 		const date2 = testData.projects[0].releases[0].deployments[1].created;
 
@@ -564,38 +564,35 @@ describe("dateConversion", () => {
 	});
 });
 
-describe("averageReleaseTimesByProjectGroup", () => {
-	test("to return the release count of a given project", () => {
+describe("getAverageReleaseTimesByProjectGroup", () => {
+	test("to return the release count and average time to live of a given project group", () => {
 		expect(
-			averageReleaseTimesByProjectGroup(testData)["retriever"].releaseCount
+			getAverageReleaseTimesByProjectGroup(testData)["retriever"].releaseCount
 		).toBe(3);
 		expect(
-			averageReleaseTimesByProjectGroup(testData)["Spaniel"].releaseCount
+			getAverageReleaseTimesByProjectGroup(testData)["Spaniel"].releaseCount
 		).toBe(2);
 		expect(
-			averageReleaseTimesByProjectGroup(testData)["Spaniel"].averageTimeToLive
+			getAverageReleaseTimesByProjectGroup(testData)["Spaniel"]
+				.averageTimeToLive
 		).toBe(284);
 	});
 });
 
-describe("findFailedDeployments", () => {
-	test("returns true if deployment fails to go live", () => {
+describe("findFailedReleases", () => {
+	test("returns a string denoting whether a deployment fails to go live or not", () => {
 		const deployments = testData.projects[3].releases[0].deployments;
 		const deployments2 = testData.projects[3].releases[2].deployments;
 		const deployments3 = testData.projects[3].releases[3].deployments;
 
-		expect(findFailedDeployments(deployments)).toBe("deployment went Live");
-		expect(findFailedDeployments(deployments2)).toBe(
-			"deployment to Live Failed"
-		);
-		expect(findFailedDeployments(deployments3)).toBe(
-			"deployment to Live Failed"
-		);
+		expect(findFailedReleases(deployments)).toBe("deployment went Live");
+		expect(findFailedReleases(deployments2)).toBe("deployment to Live Failed");
+		expect(findFailedReleases(deployments3)).toBe("deployment to Live Failed");
 	});
 });
 
-describe("failedReleasesByProjectGroup", () => {
-	test("to return failed deployment count", () => {
-		expect(failedReleasesByProjectGroup(testData)).toEqual({ Spaniel3: 2 });
+describe("getFailedReleasesByProjectGroup", () => {
+	test("returns an object with project group and failed release count", () => {
+		expect(getFailedReleasesByProjectGroup(testData)).toEqual({ Spaniel3: 2 });
 	});
 });

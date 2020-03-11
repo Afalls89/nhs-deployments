@@ -13,7 +13,8 @@ This application will extract the following statistical data from a "projects.js
     - Monday,<?>
     - Tuesday,<?>
     - Wednesday,<?>
-    - Thursday,<?>Friday,<?>
+    - Thursday,<?>
+    - Friday,<?>
     - Saturday,<?>
     - Sunday,<?>
 
@@ -46,11 +47,12 @@ This application will extract the following statistical data from a "projects.js
 
 These instructions will provide you with a copy of the project on your local machine for development and testing purposes.
 
-On your local machine using terminal navigate to the directory where you unzipped this repository
+On your local machine using terminal navigate to the directory where you unzipped this repository.
+Download the "projects.json" file to the "input-file" folder.
 
 in the terminal type:
 
-```bash
+```
 
 npm i
 
@@ -62,12 +64,18 @@ Node.js version needs to be v12.10.0 or higher.
 
 ---
 
-## `Running the tests`
+## `Running the app & tests`
 
-In order to run the application and utils tests, run the following scripts:
+In order to run the application, run the following script:
 
 ```
 npm run app
+
+```
+
+In order to run utils tests, run the following script:
+
+```
 
 npm run test
 
@@ -75,4 +83,4 @@ npm run test
 
 ## `Authors`
 
-- **Andrew Falls** - _Initial work_ - [Afalls89](https://github.com/Afalls89)
+- **Andrew Falls** - [Afalls89](https://github.com/Afalls89)

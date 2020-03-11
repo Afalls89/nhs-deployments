@@ -1,48 +1,50 @@
 const data = require("./input-file/projects.json");
 const {
-	formatDeployData,
-	averageReleaseTimesByProjectGroup,
-	allLiveDeploymentsForEachDay,
-	formatReleaseData,
+	formatDeploymentData,
+	getAverageReleaseTimesByProjectGroup,
+	getLiveDeploymentsForEachDay,
+	formatReleaseTimeData,
 	createCSV,
-	failedReleasesByProjectGroup,
-	formatFailedReleases
+	getFailedReleasesByProjectGroup,
+	formatFailedReleasesData
 } = require("./utils/utils");
 
-const deployData = allLiveDeploymentsForEachDay(data);
+const deploymentData = getLiveDeploymentsForEachDay(data);
 
-const deploymentData = formatDeployData(deployData);
+const formattedDeploymentData = formatDeploymentData(deploymentData);
 
-const fieldsDeployData = ["DayOfWeek", "LiveDeployments"];
+const fieldsDeploymentData = ["DayOfWeek", "LiveDeployments"];
 
-const pathDeployData = "./output-files/1_deployment_frequency.csv";
+const pathDeploymentData = "./output-files/1_deployment_frequency.csv";
 
-// createCSV(deploymentData, fieldsDeployData, pathDeployData);
-
-//
-
-const releaseTime = averageReleaseTimesByProjectGroup(data);
-
-const releaseData = formatReleaseData(releaseTime);
-
-const fieldsReleaseData = ["ProjectGroup", "AverageTimeToLive"];
-
-const pathReleaseData = "./output-files/2_slow_releases.csv";
-
-// createCSV(releaseData, fieldsReleaseData, pathReleaseData);
+createCSV(formattedDeploymentData, fieldsDeploymentData, pathDeploymentData);
 
 //
 
-const failedReleases = failedReleasesByProjectGroup(data);
+const releaseTimeData = getAverageReleaseTimesByProjectGroup(data);
 
-const failedDeploymentData = formatFailedReleases(failedReleases);
+const formattedReleaseTimeData = formatReleaseTimeData(releaseTimeData);
 
-const fieldsFailedDeploymentData = ["ProjectGroup", "FailedReleases"];
+const fieldsReleaseTimeData = ["ProjectGroup", "AverageTimeToLive"];
 
-const pathFailedDeploymentData = "./output-files/3_failing_releases.csv";
+const pathReleaseTimeData = "./output-files/2_slow_releases.csv";
+
+createCSV(formattedReleaseTimeData, fieldsReleaseTimeData, pathReleaseTimeData);
+
+//
+
+const failedReleasesData = getFailedReleasesByProjectGroup(data);
+
+const formattedFailedReleasesData = formatFailedReleasesData(
+	failedReleasesData
+);
+
+const fieldsFailedReleasesData = ["ProjectGroup", "FailedReleases"];
+
+const pathFailedReleasesData = "./output-files/3_failing_releases.csv";
 
 createCSV(
-	failedDeploymentData,
-	fieldsFailedDeploymentData,
-	pathFailedDeploymentData
+	formattedFailedReleasesData,
+	fieldsFailedReleasesData,
+	pathFailedReleasesData
 );
